@@ -124,6 +124,7 @@ PLATFORMS
 
 DEPENDENCIES
   rbs
+  rubocop
   solargraph
   steep
   typeprof
