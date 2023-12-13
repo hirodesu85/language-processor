@@ -91,3 +91,21 @@ class FuncDef < Statement
     @body = body
   end
 end
+
+# 環境の定義（変数名と整数値の対応表）
+class Environment
+  attr_reader :env
+
+  def initialize(env)
+    @env = env
+  end
+
+  def to_s
+    str = "{"
+    env.each do |k, v|
+      str += "#{k} => #{v.to_s}, "
+    end
+    str.chomp!(", ")
+    str += "}"
+  end
+end
