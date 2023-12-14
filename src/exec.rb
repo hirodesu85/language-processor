@@ -4,7 +4,7 @@ require './src/exp'
 def evaluate(exp, env)
   case exp
   when Var
-    return env.env[exp.v]
+    return env[exp.v]
   when BinExp
     l = evaluate(exp.left, env).value
     r = evaluate(exp.right, env).value
@@ -52,7 +52,7 @@ def execute(st, env)
     return env
   when Assign
     value = evaluate(st.e, env)
-    env.env[st.v] = value
+    env[st.v] = value
     return env
   when Sequence
     for s in st.ss

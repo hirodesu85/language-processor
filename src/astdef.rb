@@ -100,6 +100,14 @@ class Environment
     @env = env
   end
 
+  def [](key)
+    @env[key]
+  end
+
+  def []=(key, value)
+    @env[key] = value
+  end
+
   def to_s
     str = "{"
     env.each do |k, v|
