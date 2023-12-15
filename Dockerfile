@@ -6,3 +6,4 @@ COPY Gemfile.lock /app/Gemfile.lock
 RUN bundle install
 ENV LANG=ja_JP.UTF-8
 ENV TZ=Asia/Tokyo
+ENV RUBYOPT -EUTF-8
