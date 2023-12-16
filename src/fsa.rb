@@ -59,3 +59,46 @@ def nfa_try_accept(a, s)
   end
   return a.is_final(cur)
 end
+
+$DFAtransitionType = {}
+
+class DFA
+  attr_reader :transition, :start, :finals
+
+  def initialize(transition, epsilonTransitions, start, finals)
+    @transition, @start, @finals = transition, start, finals
+  end
+end
+
+def dfa_try_accept(a, s)
+  cur = a.start
+  puts cur
+  for ch in s.split("")
+    cur = a.transition[cur][ch]
+    puts "->#{cur}"
+  end
+  return a.finals.include?(cur)
+end
+
+def nfa_to_dfa(n)
+  new_states = [n.get_epsilon_closure(Set.new([n.start]))]
+  src = 0
+  alphabet = Set.new(n.transition.values.map { |h| h.keys }.flatten)
+  transdict = {}
+  while src < new_states.length
+    cur = new_states[src]
+    transdict[src] = {}
+    for c in alphabet
+      c_next = n.transit(cur, c)
+      if !new_states.include?(c_next)
+        new_states.push(c_next)
+      end
+      dest = new_states.index(c_next)
+      transdict[src][c] = dest
+    end
+    src += 1
+  end
+  finals = Set.new(new_states.select { |s| n.is_final(s) }.map { |s| new_states.index(s) })
+  return DFA.new(transdict, 0, finals)
+end
+
