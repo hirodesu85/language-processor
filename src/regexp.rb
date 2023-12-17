@@ -1,7 +1,10 @@
-class Regexp
+require 'set'
+require 'pry'
+
+class Reg
 end
 
-class RxChar < Regexp
+class RxChar < Reg
   attr_reader :ch
 
   def initialize(ch)
@@ -9,13 +12,13 @@ class RxChar < Regexp
   end
 end
 
-class RxAny < Regexp
+class RxAny < Reg
 end
 
-class RxEmpty < Regexp
+class RxEmpty < Reg
 end
 
-class RxSeq < Regexp
+class RxSeq < Reg
   attr_reader :left, :right
 
   def initialize(left, right)
@@ -23,7 +26,7 @@ class RxSeq < Regexp
   end
 end
 
-class RxOr < Regexp
+class RxOr < Reg
   attr_reader :left, :right
 
   def initialize(left, right)
@@ -31,7 +34,7 @@ class RxOr < Regexp
   end
 end
 
-class RxRepeat < Regexp
+class RxRepeat < Reg
   attr_reader :rx
 
   def initialize(rx)
@@ -54,7 +57,7 @@ def rx_match(rx, s, i)
       return Set.new([i])
     end
   when RxSeq
-    result = Set.new(rx_match(rx.left, s, i).flat_map { |pos_left| rx_match(rx.right, s, pos_left) })
+    result = Set.new(rx_match(rx.left, s, i).map { |pos_left| rx_match(rx.right, s, pos_left) }).flatten
     return result
   when RxOr
     return rx_match(rx.left, s, i) + rx_match(rx.right, s, i)
@@ -62,7 +65,7 @@ def rx_match(rx, s, i)
     next_r = Set.new([i])
     result = next_r
     while next_r.length > 0
-      next_r = Set.new(next_r.flat_map { |pos| rx_match(rx.rx, s, pos) })
+      next_r = Set.new(next_r.map { |pos| rx_match(rx.rx, s, pos) }).flatten
       result = result + next_r
     end
     return result
@@ -74,5 +77,12 @@ def rx_match(rx, s, i)
       exit
     end
   end
-  return Set.new([])
+  return Set.new
 end
+
+
+# rx1 = RxSeq.new(RxRepeat.new(RxChar.new('a')), RxChar.new('a'))
+# p rx_match(rx1, 'aaa', 0)
+
+rx2 = RxSeq.new(RxOr.new(RxChar.new('a'), RxEmpty.new), RxChar.new('b'))
+p rx_match(rx2, 'b', 0)

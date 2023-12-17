@@ -12,10 +12,10 @@ def repeat_until_converge(old, step)
   return new
 end
 
-def all_union(sets, init = [])
+def all_union(sets, init = Set.new)
   result = init
-  for set in sets
-    result = result | set
+  for s in sets
+    result = result | s
   end
   return result
 end
@@ -65,7 +65,7 @@ $DFAtransitionType = {}
 class DFA
   attr_reader :transition, :start, :finals
 
-  def initialize(transition, epsilonTransitions, start, finals)
+  def initialize(transition, start, finals)
     @transition, @start, @finals = transition, start, finals
   end
 end
@@ -84,21 +84,21 @@ def nfa_to_dfa(n)
   new_states = [n.get_epsilon_closure(Set.new([n.start]))]
   src = 0
   alphabet = Set.new(n.transition.values.map { |h| h.keys }.flatten)
-  transdict = {}
+  trans_dict = {}
   while src < new_states.length
     cur = new_states[src]
-    transdict[src] = {}
+    trans_dict[src] = {}
     for c in alphabet
       c_next = n.transit(cur, c)
       if !new_states.include?(c_next)
         new_states.push(c_next)
       end
       dest = new_states.index(c_next)
-      transdict[src][c] = dest
+      trans_dict[src][c] = dest
     end
     src += 1
   end
-  finals = Set.new(new_states.select { |s| n.is_final(s) }.map { |s| new_states.index(s) })
-  return DFA.new(transdict, 0, finals)
+  finals = Set.new(new_states.select { |s| n.is_final(s) }.map { |s| new_states.index(s) }.flatten)
+  return DFA.new(trans_dict, 0, finals)
 end
 
